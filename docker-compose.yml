@@ -1,0 +1,38 @@
+version: "3"
+
+services:
+  ####PY####
+  random:
+    build: ./random
+    ports:
+      - 5000:5000
+    container_name: random
+    networks:
+      - app-network   
+  pow:
+    build: ./pow
+    ports:
+      - 6060:6060
+    depends_on:
+      - random
+    environment:
+      - RANDOM_HOST=random
+    container_name: pow
+    networks:
+      - app-network  
+  view:
+    build: ./entrypoint
+    ports:
+      - 3000:3000
+    environment:
+      - POW_HOST=pow
+    depends_on:
+      - pow
+    networks:
+      - app-network  
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  node_modules:  
